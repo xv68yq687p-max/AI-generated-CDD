@@ -1,1 +1,52 @@
-
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cyber Defenders Dashboard Event",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "title": { "type": "string" },
+    "summary": { "type": "string" },
+    "source": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "trust_score": { "type": "number" }
+      },
+      "required": ["name", "url"]
+    },
+    "category": { "type": "string" },
+    "perspective": { "type": "string" },
+    "country": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "actors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "attrib_russia": { "type": "boolean" },
+    "attrib_china": { "type": "boolean" },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "military_relevance": { "type": "number" },
+        "spread_potential": { "type": "number" },
+        "trust_score": { "type": "number" },
+        "overall_score": { "type": "number" }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "related_reports": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "language": { "type": "string" },
+    "confidence": { "type": "string" }
+  },
+  "required": ["id", "timestamp", "title", "source", "category", "perspective"]
+}
