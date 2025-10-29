@@ -1,0 +1,78 @@
+{
+  "date": "2025-10-29",
+  "summary": {
+    "total_events": 3,
+    "russian_related": 1,
+    "chinese_related": 1,
+    "military_relevant": 2,
+    "spread_to_norway": 1
+  },
+  "events": [
+    {
+      "id": "evt-001",
+      "timestamp": "2025-10-29T05:42:00Z",
+      "title": "CISA warns of active exploitation in Fortinet zero-day",
+      "summary": "CISA reports exploitation of CVE-2025-0137 impacting NATO defence networks.",
+      "source": { "name": "CISA", "url": "https://www.cisa.gov", "trust_score": 10 },
+      "category": "International News",
+      "perspective": "Early Warning",
+      "country": ["US","NATO"],
+      "actors": ["APT29"],
+      "attrib_russia": true,
+      "attrib_china": false,
+      "metrics": {
+        "military_relevance": 9,
+        "spread_potential": 8,
+        "trust_score": 10,
+        "overall_score": 9.1
+      },
+      "tags": ["zero-day","Fortinet","NATO"],
+      "language": "en",
+      "confidence": "high"
+    },
+    {
+      "id": "evt-002",
+      "timestamp": "2025-10-29T06:03:00Z",
+      "title": "Chinese APT31 expands espionage campaign",
+      "summary": "New spear-phishing wave detected targeting telecom infrastructure in Europe.",
+      "source": { "name": "Microsoft MSTIC", "url": "https://www.microsoft.com", "trust_score": 9 },
+      "category": "Reports",
+      "perspective": "Ongoing",
+      "country": ["CN","EU"],
+      "actors": ["APT31"],
+      "attrib_russia": false,
+      "attrib_china": true,
+      "metrics": {
+        "military_relevance": 7,
+        "spread_potential": 6,
+        "trust_score": 9,
+        "overall_score": 7.4
+      },
+      "tags": ["espionage","telecom","APT31"],
+      "language": "en",
+      "confidence": "medium"
+    },
+    {
+      "id": "evt-003",
+      "timestamp": "2025-10-29T07:12:00Z",
+      "title": "Possible cyber probe of Norwegian energy sector",
+      "summary": "NSM notes scanning activity targeting oil & gas control networks.",
+      "source": { "name": "NSM", "url": "https://www.nsm.no", "trust_score": 10 },
+      "category": "Norwegian News",
+      "perspective": "Early Warning",
+      "country": ["NO"],
+      "actors": [],
+      "attrib_russia": false,
+      "attrib_china": false,
+      "metrics": {
+        "military_relevance": 8,
+        "spread_potential": 7,
+        "trust_score": 10,
+        "overall_score": 8.3
+      },
+      "tags": ["Norway","energy","scanning"],
+      "language": "no",
+      "confidence": "medium"
+    }
+  ]
+}
