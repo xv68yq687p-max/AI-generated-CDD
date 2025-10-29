@@ -1,1 +1,45 @@
-
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Defenders Dashboard</title>
+  <style>
+    body { background: #0d1117; color: #e6edf3; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+    header, nav { background: #161b22; padding: 10px; text-align: center; }
+    .category { display: inline-block; margin: 0 10px; cursor: pointer; color: #58a6ff; }
+    #content { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+    .card { background: #21262d; border-radius: 10px; padding: 15px; }
+    .title { font-weight: bold; color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <header><h1>🧠 Cyber Defenders Dashboard</h1></header>
+  <nav>
+    <span class="category">🌍 Internasjonalt</span>
+    <span class="category">🇳🇴 Norge</span>
+    <span class="category">📑 Rapporter</span>
+    <span class="category">💬 Sosiale</span>
+    <span class="category">🔬 Teknisk</span>
+    <span class="category">🇷🇺 Russland</span>
+    <span class="category">🇨🇳 Kina</span>
+  </nav>
+  <section id="content">Laster data...</section>
+  <script>
+    async function loadData() {
+      const res = await fetch("https://cyber-defenders-dashboard.frqkb7zyfq.workers.dev/api/latest");
+      const data = await res.json();
+      const container = document.getElementById("content");
+      if (!data.events) { container.innerHTML = "Ingen data funnet"; return; }
+      container.innerHTML = data.events.map(evt => `
+        <div class="card">
+          <div class="title">${evt.title}</div>
+          <div>${evt.summary}</div>
+          <small>${evt.source.name} · ${evt.timestamp}</small>
+        </div>
+      `).join('');
+    }
+    loadData();
+  </script>
+</body>
+</html>
