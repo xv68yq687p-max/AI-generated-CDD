@@ -27,43 +27,21 @@
   <section id="content">Laster data...</section>
 
   <script>
-    async function getLatestJsonUrl() {
-      const apiUrl = "https://api.github.com/repos/xv68yq687p-max/AI-generated-CDD/contents/data";
-      const res = await fetch(apiUrl);
-      const files = await res.json();
-
-      // Filtrer ut JSON-filer
-      const jsonFiles = files
-        .filter(f => f.name.endsWith(".json"))
-        .map(f => f.name)
-        .sort()
-        .reverse(); // nyeste først
-
-      if (jsonFiles.length === 0) return null;
-
-      const latestFile = jsonFiles[0];
-      return `https://raw.githubusercontent.com/xv68yq687p-max/AI-generated-CDD/main/data/${latestFile}`;
-    }
-
     async function loadData() {
       const container = document.getElementById("content");
       container.innerHTML = "Laster data...";
 
+      // Hardkodet direktekobling til GitHub-filen
+      const dataUrl = "https://raw.githubusercontent.com/xv68yq687p-max/AI-generated-CDD/main/data/2025-10-30.json";
+
       try {
-        const latestUrl = await getLatestJsonUrl();
-        if (!latestUrl) {
-          container.innerHTML = "Ingen JSON-filer funnet i repoet.";
-          return;
-        }
-
-        const res = await fetch(latestUrl);
+        const res = await fetch(dataUrl);
         const txt = await res.text();
-console.log("Rådata:", txt.slice(0,300));
-const data = JSON.parse(txt);
-        const data = await res.json();
+        console.log("Rådata fra GitHub:", txt.slice(0, 200));
 
+        const data = JSON.parse(txt);
         if (!data.events) {
-          container.innerHTML = "Ingen data funnet i nyeste fil.";
+          container.innerHTML = "Ingen data funnet i denne filen.";
           return;
         }
 
@@ -76,8 +54,8 @@ const data = JSON.parse(txt);
         `).join('');
 
       } catch (err) {
-        console.error(err);
-        container.innerHTML = "Kunne ikke laste data. Sjekk GitHub-repoet.";
+        console.error("Feil under lasting:", err);
+        container.innerHTML = "Kunne ikke laste data. Sjekk at filen finnes i GitHub-repoet.";
       }
     }
 
