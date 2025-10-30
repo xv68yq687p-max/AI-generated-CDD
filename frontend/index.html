@@ -57,6 +57,9 @@
         }
 
         const res = await fetch(latestUrl);
+        const txt = await res.text();
+console.log("Rådata:", txt.slice(0,300));
+const data = JSON.parse(txt);
         const data = await res.json();
 
         if (!data.events) {
