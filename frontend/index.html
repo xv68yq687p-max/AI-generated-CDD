@@ -25,20 +25,59 @@
     <span class="category">🇨🇳 Kina</span>
   </nav>
   <section id="content">Laster data...</section>
+
   <script>
-    async function loadData() {
-      const res = await fetch("https://cyber-defenders-dashboard.frqkb7zyfq.workers.dev/api/latest");
-      const data = await res.json();
-      const container = document.getElementById("content");
-      if (!data.events) { container.innerHTML = "Ingen data funnet"; return; }
-      container.innerHTML = data.events.map(evt => `
-        <div class="card">
-          <div class="title">${evt.title}</div>
-          <div>${evt.summary}</div>
-          <small>${evt.source.name} · ${evt.timestamp}</small>
-        </div>
-      `).join('');
+    async function getLatestJsonUrl() {
+      const apiUrl = "https://api.github.com/repos/xv68yq687p-max/AI-generated-CDD/contents/data";
+      const res = await fetch(apiUrl);
+      const files = await res.json();
+
+      // Filtrer ut JSON-filer
+      const jsonFiles = files
+        .filter(f => f.name.endsWith(".json"))
+        .map(f => f.name)
+        .sort()
+        .reverse(); // nyeste først
+
+      if (jsonFiles.length === 0) return null;
+
+      const latestFile = jsonFiles[0];
+      return `https://raw.githubusercontent.com/xv68yq687p-max/AI-generated-CDD/main/data/${latestFile}`;
     }
+
+    async function loadData() {
+      const container = document.getElementById("content");
+      container.innerHTML = "Laster data...";
+
+      try {
+        const latestUrl = await getLatestJsonUrl();
+        if (!latestUrl) {
+          container.innerHTML = "Ingen JSON-filer funnet i repoet.";
+          return;
+        }
+
+        const res = await fetch(latestUrl);
+        const data = await res.json();
+
+        if (!data.events) {
+          container.innerHTML = "Ingen data funnet i nyeste fil.";
+          return;
+        }
+
+        container.innerHTML = data.events.map(evt => `
+          <div class="card">
+            <div class="title">${evt.title}</div>
+            <div>${evt.summary}</div>
+            <small>${evt.source.name} · ${new Date(evt.timestamp).toLocaleString()}</small>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "Kunne ikke laste data. Sjekk GitHub-repoet.";
+      }
+    }
+
     loadData();
   </script>
 </body>
