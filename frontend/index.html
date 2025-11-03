@@ -8,34 +8,78 @@
     body { background: #0d1117; color: #e6edf3; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
     header, nav { background: #161b22; padding: 10px; text-align: center; }
     header h1 { margin: 0; }
-    .category { display: inline-block; margin: 0 10px; cursor: pointer; color: #58a6ff; }
-    .category:hover { text-decoration: underline; }
+    nav span.category {
+      display: inline-block;
+      margin: 0 8px;
+      cursor: pointer;
+      color: #58a6ff;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    nav span.category.active {
+      background: #238636;
+      color: white;
+    }
+    nav span.category:hover { text-decoration: underline; }
+
     #controls { text-align: center; margin: 10px; }
-    select, button { background: #21262d; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 6px 10px; margin: 5px; cursor: pointer; }
+    select, button {
+      background: #21262d; color: #e6edf3; border: 1px solid #30363d;
+      border-radius: 6px; padding: 6px 10px; margin: 5px; cursor: pointer;
+    }
     button:hover, select:hover { background: #30363d; }
-    #content { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-    .card { background: #21262d; border-radius: 10px; padding: 15px; transition: transform 0.2s; }
+
+    #content {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #21262d;
+      border-radius: 10px;
+      padding: 15px;
+      transition: transform 0.2s;
+    }
     .card:hover { transform: translateY(-3px); }
     .title a { font-weight: bold; color: #58a6ff; text-decoration: none; }
     .title a:hover { text-decoration: underline; }
     small { color: #8b949e; }
-    /* Modal */
-    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13,17,23,0.9); justify-content: center; align-items: center; }
-    #modal-content { background: #161b22; padding: 20px; border-radius: 10px; max-width: 500px; text-align: left; }
+
+    /* Modal styling */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(13,17,23,0.9);
+      justify-content: center; align-items: center;
+    }
+    #modal-content {
+      background: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
     #modal-content h2 { margin-top: 0; }
-    #closeModal { float: right; background: #30363d; border: none; color: #e6edf3; cursor: pointer; border-radius: 4px; padding: 4px 8px; }
+    #closeModal {
+      float: right; background: #30363d; border: none;
+      color: #e6edf3; cursor: pointer; border-radius: 4px; padding: 4px 8px;
+    }
   </style>
 </head>
 <body>
   <header><h1>🧠 Cyber Defenders Dashboard</h1></header>
-  <nav>
-    <span class="category">🌍 Internasjonalt</span>
-    <span class="category">🇳🇴 Norge</span>
-    <span class="category">📑 Rapporter</span>
-    <span class="category">💬 Sosiale</span>
-    <span class="category">🔬 Teknisk</span>
-    <span class="category">🇷🇺 Russland</span>
-    <span class="category">🇨🇳 Kina</span>
+
+  <nav id="categoryNav">
+    <span class="category" data-cat="Internasjonalt">🌍 Internasjonalt</span>
+    <span class="category" data-cat="Norge">🇳🇴 Norge</span>
+    <span class="category" data-cat="Rapporter">📑 Rapporter</span>
+    <span class="category" data-cat="Sosiale">💬 Sosiale</span>
+    <span class="category" data-cat="Teknisk">🔬 Teknisk</span>
+    <span class="category" data-cat="Russland">🇷🇺 Russland</span>
+    <span class="category" data-cat="Kina">🇨🇳 Kina</span>
   </nav>
 
   <div id="controls">
@@ -60,12 +104,13 @@
   </div>
 
   <script>
-    let eventsData = [];
+    let allEvents = [];
+    let filteredEvents = [];
+    let currentCategory = null;
 
     async function loadData() {
       const container = document.getElementById("content");
       container.innerHTML = "Laster data...";
-
       const dataUrl = "https://raw.githubusercontent.com/xv68yq687p-max/AI-generated-CDD/main/data/2025-11-03.json";
 
       try {
@@ -74,20 +119,28 @@
         const data = JSON.parse(txt);
 
         if (!data.events) {
-          container.innerHTML = "Ingen data funnet i denne filen.";
+          container.innerHTML = "Ingen data funnet.";
           return;
         }
 
-        eventsData = data.events;
-        renderEvents(eventsData);
+        allEvents = data.events.map(e => ({
+          ...e,
+          category: e.category || "Ukjent"
+        }));
+        filteredEvents = allEvents;
+        renderEvents(filteredEvents);
       } catch (err) {
         console.error("Feil under lasting:", err);
-        container.innerHTML = "Kunne ikke laste data. Sjekk at filen finnes i GitHub-repoet.";
+        container.innerHTML = "Kunne ikke laste data.";
       }
     }
 
     function renderEvents(events) {
       const container = document.getElementById("content");
+      if (!events.length) {
+        container.innerHTML = "<p>Ingen saker i valgt kategori.</p>";
+        return;
+      }
       container.innerHTML = events.map(evt => {
         const link = evt.source?.url
           ? `<a href="${evt.source.url}" target="_blank" rel="noopener noreferrer">${evt.title}</a>`
@@ -96,14 +149,14 @@
           <div class="card">
             <div class="title">${link}</div>
             <div>${evt.summary}</div>
-            <small>${evt.source?.name || 'Ukjent kilde'} · ${new Date(evt.timestamp).toLocaleString()}</small>
+            <small>${evt.source?.name || 'Ukjent kilde'} · ${new Date(evt.timestamp).toLocaleString()} · <i>${evt.category}</i></small>
           </div>
         `;
       }).join('');
     }
 
     function sortEvents(criteria) {
-      let sorted = [...eventsData];
+      let sorted = [...filteredEvents];
       if (criteria === "newest") sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       else if (criteria === "oldest") sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       else if (criteria === "az") sorted.sort((a, b) => a.title.localeCompare(b.title));
@@ -111,33 +164,49 @@
       renderEvents(sorted);
     }
 
-    function generateReport() {
-      if (!eventsData.length) return;
+    function filterByCategory(cat) {
+      const navItems = document.querySelectorAll(".category");
+      navItems.forEach(el => el.classList.remove("active"));
+      const clicked = document.querySelector(`.category[data-cat="${cat}"]`);
+      if (clicked) clicked.classList.add("active");
 
-      const count = eventsData.length;
-      const timestamps = eventsData.map(e => new Date(e.timestamp));
+      currentCategory = cat;
+      filteredEvents = cat ? allEvents.filter(e => e.category === cat) : allEvents;
+      sortEvents(document.getElementById("sortSelect").value);
+    }
+
+    function generateReport() {
+      if (!filteredEvents.length) return;
+      const count = filteredEvents.length;
+      const timestamps = filteredEvents.map(e => new Date(e.timestamp));
       const minDate = new Date(Math.min(...timestamps));
       const maxDate = new Date(Math.max(...timestamps));
 
-      const titles = eventsData.map(e => e.title).join(" ").toLowerCase();
+      const titles = filteredEvents.map(e => e.title).join(" ").toLowerCase();
       const words = titles.split(/\s+/).filter(w => w.length > 3);
       const freq = {};
       words.forEach(w => freq[w] = (freq[w] || 0) + 1);
       const topWords = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([w])=>w);
 
       const report = `
-        <p><b>Totalt antall saker:</b> ${count}</p>
+        <p><b>Antall saker:</b> ${count}</p>
+        <p><b>Kategori:</b> ${currentCategory || 'Alle'}</p>
         <p><b>Tidsperiode:</b> ${minDate.toLocaleDateString()} – ${maxDate.toLocaleDateString()}</p>
-        <p><b>Vanligste temaer (fra titler):</b> ${topWords.join(", ")}</p>
+        <p><b>Vanligste temaer:</b> ${topWords.join(", ")}</p>
       `;
       document.getElementById("reportContent").innerHTML = report;
       document.getElementById("modal").style.display = "flex";
     }
 
+    // Event listeners
     document.getElementById("sortSelect").addEventListener("change", e => sortEvents(e.target.value));
     document.getElementById("generateReport").addEventListener("click", generateReport);
     document.getElementById("closeModal").addEventListener("click", () => {
       document.getElementById("modal").style.display = "none";
+    });
+
+    document.querySelectorAll(".category").forEach(btn => {
+      btn.addEventListener("click", () => filterByCategory(btn.dataset.cat));
     });
 
     loadData();
